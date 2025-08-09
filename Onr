@@ -1,0 +1,64 @@
+# README.md
+
+## Project Title
+Clinic Booking System (MySQL)
+
+## Description
+A relational database system for managing clinic operations, including patients, doctors, specialties, appointments, treatments, prescriptions, invoices, and payments. Built entirely in MySQL with proper constraints, relationships, and indexing.
+
+## Features
+- Patient, doctor, and clinic management
+- Specialty assignments for doctors
+- Appointment booking and treatment recording
+- Invoice generation and payment tracking
+- Support for multiple clinics per doctor
+- Role-based system users (Admin, Doctor, Receptionist)
+
+## Setup & Import Instructions
+1. Install MySQL 8.x or later.
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/clinic-booking-system.git
+   cd clinic-booking-system
+   ```
+3. Import the schema:
+   ```bash
+   mysql -u root -p < clinic_booking_system.sql
+   ```
+4. (Optional) Import sample data:
+   ```bash
+   mysql -u root -p clinic_booking < sample_data.sql
+   ```
+
+## Entity Relationship Diagram (ERD)
+![ERD](ERD.png)
+
+## Example Queries
+- Get all appointments for a patient:
+```sql
+SELECT a.appointment_id, a.scheduled_start, a.scheduled_end, s.label AS status
+FROM appointments a
+JOIN appointment_status s ON a.status_id = s.status_id
+WHERE a.patient_id = 1;
+```
+
+- Get all doctors and their specialties:
+```sql
+SELECT d.first_name, d.last_name, sp.name AS specialty
+FROM doctors d
+JOIN specialties sp ON d.specialty_id = sp.specialty_id;
+```
+
+- Check unpaid invoices:
+```sql
+SELECT * FROM invoices WHERE is_paid = 0;
+```
+
+## File Structure
+- `clinic_booking_system.sql` – Full schema with tables, constraints, and indexes.
+- `sample_data.sql` – Sample seed data for quick testing.
+- `ERD.png` – Entity Relationship Diagram.
+- `README.md` – Documentation.
+
+## License
+This project is released under the MIT License.
