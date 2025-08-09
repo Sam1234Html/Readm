@@ -1,0 +1,70 @@
+from graphviz import Digraph
+
+# Define ERD diagram
+dot = Digraph(comment="Clinic Booking System ERD", format="png")
+dot.attr(rankdir="LR", fontsize="10")
+
+# Entities
+entities = {
+    "roles": ["role_id (PK)", "name", "description"],
+    "users": ["user_id (PK)", "role_id (FK)", "email", "password_hash", "first_name", "last_name", "phone"],
+    "patients": ["patient_id (PK)", "medical_record_number", "first_name", "last_name", "date_of_birth", "gender"],
+    "specialties": ["specialty_id (PK)", "name", "description"],
+    "doctors": ["doctor_id (PK)", "user_id (FK)", "license_number", "specialty_id (FK)", "first_name", "last_name"],
+    "clinics": ["clinic_id (PK)", "name", "address", "phone", "email"],
+    "doctor_clinics": ["doctor_id (FK)", "clinic_id (FK)", "start_date", "end_date"],
+    "doctor_availability": ["availability_id (PK)", "doctor_id (FK)", "clinic_id (FK)", "weekday", "start_time", "end_time"],
+    "appointment_status": ["status_id (PK)", "code", "label"],
+    "appointments": ["appointment_id (PK)", "patient_id (FK)", "doctor_id (FK)", "clinic_id (FK)", "status_id (FK)", "scheduled_start", "scheduled_end"],
+    "treatments": ["treatment_id (PK)", "code", "name", "description", "base_price"],
+    "appointment_treatments": ["appointment_id (FK)", "treatment_id (FK)", "quantity", "price"],
+    "prescriptions": ["prescription_id (PK)", "appointment_id (FK)", "prescribed_by (FK)", "notes"],
+    "medications": ["medication_id (PK)", "name", "description"],
+    "prescription_items": ["prescription_id (FK)", "medication_id (FK)", "dosage", "instructions"],
+    "invoices": ["invoice_id (PK)", "appointment_id (FK)", "patient_id (FK)", "total_amount", "is_paid"],
+    "invoice_items": ["invoice_item_id (PK)", "invoice_id (FK)", "description", "amount"],
+    "payments": ["payment_id (PK)", "invoice_id (FK)", "amount", "method"],
+    "patient_notes": ["note_id (PK)", "patient_id (FK)", "author_user_id (FK)", "title", "body"]
+}
+
+# Add entities to diagram
+for entity, fields in entities.items():
+    label = entity + "|" + "\\l".join(fields) + "\\l"
+    dot.node(entity, label=label, shape="record")
+
+# Relationships
+relationships = [
+    ("users", "roles"),
+    ("doctors", "users"),
+    ("doctors", "specialties"),
+    ("doctor_clinics", "doctors"),
+    ("doctor_clinics", "clinics"),
+    ("doctor_availability", "doctors"),
+    ("doctor_availability", "clinics"),
+    ("appointments", "patients"),
+    ("appointments", "doctors"),
+    ("appointments", "clinics"),
+    ("appointments", "appointment_status"),
+    ("appointment_treatments", "appointments"),
+    ("appointment_treatments", "treatments"),
+    ("prescriptions", "appointments"),
+    ("prescriptions", "doctors"),
+    ("prescription_items", "prescriptions"),
+    ("prescription_items", "medications"),
+    ("invoices", "appointments"),
+    ("invoices", "patients"),
+    ("invoice_items", "invoices"),
+    ("payments", "invoices"),
+    ("patient_notes", "patients"),
+    ("patient_notes", "users")
+]
+
+# Add edges
+for child, parent in relationships:
+    dot.edge(child, parent)
+
+# Save diagram
+output_path = '/mnt/data/ERD'
+dot.render(output_path, cleanup=True)
+
+output_path + ".png"
